@@ -8,3 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] Initial Release - 01.08.2022
 
 - Initial Release
+
+## [1.1.0] Minor Update - TBA
+
+- Removed Army Limits for Cathayan Caravans and Ogre Camps
+- Reduced Supply Lines values to reflect Warhammer III changes
+- Refactored code to remove hardcoded variables

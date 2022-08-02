@@ -1,29 +1,47 @@
 local cbac = core:get_static_object("cbac");
+local exceptions = {
+  free_military_force_types = {
+    "DISCIPLE_ARMY",
+    "OGRE_CAMP"
+  },
+  free_military_force_effects = {
+    "wh2_dlc12_bundle_underempire_army_spawn" -- The Vermintide army
+  }
+}
 
 -- COST LIMITS --
 
 local function is_army_punishable(military_force)
-  -- The Vermintide army spawned from a Skaven undercity is exempt from the limit while it has the initial effect
-  return not (military_force:has_effect_bundle("wh2_dlc12_bundle_underempire_army_spawn"));
+  for _, free_military_force_type in pairs(free_military_force_types) do
+    if free_military_force_type == military_force:force_type():key() then
+      return false;
+    end
+  end
+
+  for _, free_military_force_effect in pairs(free_military_force_effects) do
+    return not military_force:has_effect_bundle(free_military_force_effect);
+  end
+
+  return true;
 end
 
 local function enforce_army_cost_limit(character)
   if cm:char_is_mobile_general_with_army(character) then
-    local army_cqi = character:military_force():command_queue_index();
-    local army_limit = cbac:get_army_limit(character);
-    local army_cost = cbac:get_army_cost(character);
+    if is_army_punishable(character:military_force()) then
+      local army_cqi = character:military_force():command_queue_index();
+      local army_limit = cbac:get_army_limit(character);
+      local army_cost = cbac:get_army_cost(character);
 
-    if (army_cost > army_limit) or (cbac:get_army_hero_count(character) > cbac:get_config("hero_cap")) then
-      if is_army_punishable(character:military_force()) then
+      if (army_cost > army_limit) or (cbac:get_army_hero_count(character) > cbac:get_config("hero_cap")) then
         cbac:log("Army (" .. army_cqi .. ") is over cost limit (" .. army_limit .. "), will be punished!");
         cm:apply_effect_bundle_to_force("cbac_army_cost_limit_penalty", army_cqi, 1);
         return;
       end
-    end
 
-    if army_cost <= army_limit then
-      cbac:log("Army (" .. army_cqi .. ") is not over cost limit, will remove penalty!");
-      cm:remove_effect_bundle_from_force("cbac_army_cost_limit_penalty", army_cqi);
+      if army_cost <= army_limit then
+        cbac:log("Army (" .. army_cqi .. ") is not over cost limit, will remove penalty!");
+        cm:remove_effect_bundle_from_force("cbac_army_cost_limit_penalty", army_cqi);
+      end
     end
   end
 end
@@ -69,6 +87,7 @@ local function generate_tooltip_text_army_cost(character)
     tooltip_text = tooltip_text .. "\n[[col:red]]" .. "This army has too many heroes in it!" .. "[[/col]]";
   end
 
+  -- TODO SHOULD BE REMOVED?
   if character:faction():is_human() and (cbac:get_config("supply_lines")) then
     if not cbac:supply_lines_affect_faction(character:faction()) then
       tooltip_text = tooltip_text .. "\n\nThis faction does not use Supply Lines.";

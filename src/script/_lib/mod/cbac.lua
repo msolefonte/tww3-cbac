@@ -218,7 +218,10 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
           local unit_context_id = unit_info:GetContextObjectId("CcoUnitDetails");
           local unit_key_head = string.gsub(unit_context_id, "RecruitmentUnit_", "")
           local unit_key = string.gsub(unit_key_head, "_%d+_%d+_%d+_%d+$", "")
-          queued_units_cost = queued_units_cost + cco("CcoMainUnitRecord", unit_key):Call("Cost");
+          local unit_cost = cco("CcoMainUnitRecord", unit_key):Call("Cost");
+
+          cm:log("Value of " .. unit_key .. ": " .. unit_cost);
+          queued_units_cost = queued_units_cost + unit_cost;
         end)
 
         if not ok then

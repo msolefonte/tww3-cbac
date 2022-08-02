@@ -14,15 +14,15 @@ Cost-based Army Caps mod for Total War: Warhammer III.
 
 ## Introduction
 
-Approved port of Jadawin's [Cost-based Army Caps](https://steamcommunity.com/sharedfiles/filedetails/?id=1723390103) for 
+Approved port of Jadawin's [Cost-based Army Caps](https://steamcommunity.com/sharedfiles/filedetails/?id=1723390103) for
 Warhammer II.
 
-This mod introduces an economic cap to the campaign armies in a very similar fashion than Multiplayer Battles do, hence 
-removing the viability of elite doomstacks and increasing that of basic units without being limited by types or tiers. 
+This mod introduces an economic cap to the campaign armies in a very similar fashion than Multiplayer Battles do, hence
+removing the viability of elite doomstacks and increasing that of basic units without being limited by types or tiers.
 The change affects both the player and the AI, although by default the human limited will be smaller.
 
-If the total point cost of the army exceeds the limit, it will cost 3x the normal upkeep and will be unable to replenish 
-until it is again under the cost limit. Worry not, limits are programmed to be dynamic by default, which means a higher 
+If the total point cost of the army exceeds the limit, it will cost 3x the normal upkeep and will be unable to replenish
+until it is again under the cost limit. Worry not, limits are programmed to be dynamic by default, which means a higher
 level lord will be able to handle a more expensive army. All the values can be modified using MCT.
 
 ## Contributing
@@ -35,7 +35,8 @@ Feel free to add issues or to create pull requests. Help is always welcome.
 
 ## Authors
 
-* **Marc Solé Fonte** - *Initial work* - [msolefonte](https://github.com/msolefonte)
+* **Jadawin** - *Initial work* - [jadawin](https://steamcommunity.com/profiles/76561198030772148)
+* **Marc Solé Fonte** - *Conversion to Warhammer III and posterior work* - [msolefonte](https://github.com/msolefonte)
 
 ## License
 
@@ -43,9 +44,9 @@ This project is licensed under the Apache License, Version 2.0 - see the [LICENS
 
 ## Acknowledgments
 
-* Special thanks to **Jadawin** for his amazing work for Warhammer II and for being open about me porting the mod here. 
+* Special thanks to **Jadawin** for his amazing work for Warhammer II and for being open about me porting the mod here.
 Thank you for all your excellent mods!
-* Special thanks to the **Da Modding Den** community for their knowledge and patience. This would have not not been 
+* Special thanks to the **Da Modding Den** community for their knowledge and patience. This would have not not been
 possible without them. I resist to give names because you are all amazing <3
 * Special thanks to all the users that have supported the development economically.
 * Thanks to all the users that have participated in the beta releases, that have reported bugs and that have contributed

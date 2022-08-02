@@ -13,4 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed Army Limits for Cathayan Caravans and Ogre Camps
 - Reduced Supply Lines values to reflect Warhammer III changes
-- Refactored code to remove hardcoded variables
+- Tooltip texts changed
+- Technical changes:
+  - Refactored code to remove hardcoded variables
+  - Moved tooltip text code into a new script
+  - Moved supply lines code into a new script
+  - New method `is_army_punishable(military_force)` added to the CBAC lib API

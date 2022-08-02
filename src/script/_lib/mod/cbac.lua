@@ -11,7 +11,7 @@ local config = {
   upgrade_ai_armies = false,
   upgrade_grace_period = 20,
   auto_level_ai_lords = 3,
-  logging_enabled = false
+  logging_enabled = true
 };
 local exceptions = {
   free_heroes = {
@@ -21,18 +21,34 @@ local exceptions = {
     "wh_dlc06_dwf_cha_thane_ghost_0",
     "wh_dlc06_dwf_cha_thane_ghost_1"
   },
+  free_military_force_types = {
+    "DISCIPLE_ARMY",
+    "OGRE_CAMP"
+  },
+  free_military_force_effects = {
+    "wh2_dlc12_bundle_underempire_army_spawn" -- The Vermintide army
+  },
   free_units = {
     "wh_dlc07_brt_cha_green_knight_0"
   },
   custom_heroes = {
     "wh2_dlc11_cst_inf_count_noctilus_0",
     "wh2_dlc11_cst_inf_count_noctilus_1"
+  },
+  supply_lines_free_factions = {
+    "wh2_dlc13_lzd_spirits_of_the_jungle"
+  },
+  supply_lines_free_subcultures = {
+    "wh_dlc03_sc_bst_beastmen",
+    "wh_main_sc_brt_bretonnia",
+    "wh2_dlc09_sc_tmb_tomb_kings",
+    "wh_main_sc_chs_chaos"
   }
 }
 
 -- UTILS --
 
-local function table.contains(table, element)
+function table.contains(table, element)
   for _, value in pairs(table) do
     if value == element then
       return true;
@@ -86,33 +102,47 @@ function cbac:block_mct_settings_if_required()
   end
 end
 
--- COST-BASED ARMY CAPS --
+-- DEFINITIONS AND EXCEPTIONS --
 
-function is_free_unit(unit_key)
+function cbac:is_army_punishable(military_force)
+  for _, free_military_force_type in pairs(exceptions.free_military_force_types) do
+    if free_military_force_type == military_force:force_type():key() then
+      return false;
+    end
+  end
+
+  for _, free_military_force_effect in pairs(exceptions.free_military_force_effects) do
+    return not military_force:has_effect_bundle(free_military_force_effect);
+  end
+
+  return true;
+end
+
+function _is_hero(unit_key)
+  return string.find(unit_key, "_cha_") or table.contains(exceptions.custom_heroes, unit_key);
+end
+
+function _is_free_unit(unit_key)
   return table.contains(exceptions.free_units, unit_key);
 end
 
+function _is_free_hero(unit_key)
+  return table.contains(exceptions.free_heroes, unit_key);
+end
+
+-- COST-BASED ARMY CAPS --
+
 function cbac:get_unit_cost(unit)
-  if is_free_unit(unit:unit_key()) then
+  if _is_free_unit(unit:unit_key()) then
     return 0;
   else
     return unit:get_unit_custom_battle_cost();
   end
 end
 
-function is_hero(unit_key)
-  return string.find(unit_key, "_cha_") or table.contains(exceptions.custom_heroes, unit_key);
-end
-
-function is_free_hero(unit_key)
-  return table.contains(exceptions.free_heroes, unit_key);
-end
-
-function cbac:get_hero_count(unit)
-  if is_hero(unit:unit_key()) then
-    if not is_free_hero(unit:unit_key()) then
-      return 1;
-    end
+function cbac:get_hero_cost(unit)
+  if _is_hero(unit:unit_key()) and not _is_free_hero(unit:unit_key()) then
+    return 1;
   end
 
   return 0;
@@ -171,26 +201,10 @@ function cbac:get_army_hero_count(character)
   local army_hero_count = -1;
   local unit_list = character:military_force():unit_list();
   for i = 0, unit_list:num_items() - 1 do
-    army_hero_count = army_hero_count + cbac:get_hero_count(unit_list:item_at(i));
+    army_hero_count = army_hero_count + cbac:get_hero_cost(unit_list:item_at(i));
   end
 
   return army_hero_count;
-end
-
-function cbac:get_character_cost_string(character)
-  if not character:has_military_force() then
-    return "";
-  end
-
-  local character_cost_string = "\nCost values of lord/heroes: ";
-  local unit_list = character:military_force():unit_list();
-  for i = 0, unit_list:num_items() - 1 do
-    if string.find(unit_list:item_at(i):unit_key(), "_cha_") then
-      character_cost_string = character_cost_string .. (unit_list:item_at(i):get_unit_custom_battle_cost()) .. "  ";
-    end
-  end
-
-  return character_cost_string;
 end
 
 function cbac:get_garrison_cost(cqi)
@@ -220,7 +234,7 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
           local unit_key = string.gsub(unit_key_head, "_%d+_%d+_%d+_%d+$", "");
           local unit_cost = cco("CcoMainUnitRecord", unit_key):Call("Cost");
 
-          cm:log("Value of " .. unit_key .. ": " .. unit_cost);
+          cbac:log("Value of " .. unit_key .. ": " .. unit_cost);
           queued_units_cost = queued_units_cost + unit_cost;
         end)
 
@@ -228,7 +242,6 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
           cbac:log("Error reading a queued unit card: " .. unit_card:Id());
           cbac:log(tostring(err));
         end
-
         unit_card:SimulateMouseOff();
       end
     end
@@ -239,12 +252,9 @@ end
 
 -- SUPPLY LINES --
 
--- TODO SHOULD BE REMOVED?
 function cbac:supply_lines_affect_faction(faction)
-    local subculture = faction:subculture(); -- TODO HARDCODED
-    return not (subculture == "wh_dlc03_sc_bst_beastmen" or subculture == "wh_main_sc_brt_bretonnia" or
-      subculture == "wh2_dlc09_sc_tmb_tomb_kings" or subculture == "wh_main_sc_chs_chaos" or
-      faction:name() == "wh2_dlc13_lzd_spirits_of_the_jungle");
+    return not (table.contains(exceptions.supply_lines_free_factions, faction:name()) or
+                table.contains(exceptions.supply_lines_free_subcultures, faction:subculture()));
 end
 
 function cbac:get_army_supply_factor(character, added_cost)

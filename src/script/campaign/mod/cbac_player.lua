@@ -1,6 +1,6 @@
 local cbac = core:get_static_object("cbac");
 
--- [[ COST LIMITS ]] --
+-- COST LIMITS --
 
 local function is_army_punishable(military_force)
   -- The Vermintide army spawned from a Skaven undercity is exempt from the limit while it has the initial effect
@@ -117,9 +117,9 @@ local function set_tooltip_text_garrison_cost_if_required(region)
   end
 end
 
--- [[ SUPPLY LINES ]] --
+-- SUPPLY LINES --
 
--- TODO HARDCODED
+-- TODO SHOULD BE REMOVED?
 local function apply_supply_lines(faction)
   local total_supply_lines_factor = 0;
   local character_list = faction:character_list();
@@ -157,142 +157,142 @@ local function apply_supply_lines(faction)
   cm:apply_custom_effect_bundle_to_faction(supply_lines_effect_bundle, faction);
 end
 
--- [[ LISTENERS ]] --
+-- LISTENERS --
 
 local function add_listeners()
-    core:add_listener(
-      "CBAC_MCTPanelOpened",
-      "MctPanelOpened",
-      true,
-      function()
-        cbac:block_mct_settings_if_required();
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_MCTPanelOpened",
+    "MctPanelOpened",
+    true,
+    function()
+      cbac:block_mct_settings_if_required();
+    end,
+    true
+  );
 
-    core:add_listener(
-      "CBAC_ArmyCostTooltip",
-      "CharacterSelected",
-      function(context)
-        return context:character():has_military_force();
-      end,
-      function(context)
-        local character = context:character();
-        cm:set_saved_value("cbac_last_selected_char_cqi", character:command_queue_index());
-        cbac:log("Selected character's CQI: " .. character:command_queue_index());
-        cm:callback(function()
-            generate_tooltip_text_army_cost(character);
-          end, 0.1)
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_ArmyCostTooltip",
+    "CharacterSelected",
+    function(context)
+      return context:character():has_military_force();
+    end,
+    function(context)
+      local character = context:character();
+      cm:set_saved_value("cbac_last_selected_char_cqi", character:command_queue_index());
+      cbac:log("Selected character's CQI: " .. character:command_queue_index());
+      cm:callback(function()
+          generate_tooltip_text_army_cost(character);
+        end, 0.1)
+    end,
+    true
+  );
 
-    core:add_listener(
-      "CBAC_GarrisonCostTooltip",
-      "SettlementSelected",
-      true,
-      function(context)
-        set_tooltip_text_garrison_cost_if_required(context:garrison_residence():region());
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_GarrisonCostTooltip",
+    "SettlementSelected",
+    true,
+    function(context)
+      set_tooltip_text_garrison_cost_if_required(context:garrison_residence():region());
+    end,
+    true
+  );
 
-    core:add_listener(
-      "CBAC_NormalUnitDisbandedEvent",
-      "UnitDisbanded",
-      function(context)
-        return cm.campaign_ui_manager:is_panel_open("units_panel") and context:unit():faction():is_human();
-      end,
-      function()
-        cm:callback(function()
-            enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
-          end, 0.1)
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_NormalUnitDisbandedEvent",
+    "UnitDisbanded",
+    function(context)
+      return cm.campaign_ui_manager:is_panel_open("units_panel") and context:unit():faction():is_human();
+    end,
+    function()
+      cm:callback(function()
+          enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
+        end, 0.1)
+    end,
+    true
+  );
 
-    core:add_listener(
-      "CBAC_GeneralDisbandedEvent",
-      "CharacterConvalescedOrKilled",
-      function(context)
-        return cm:char_is_mobile_general_with_army(context:character());
-      end,
-      function()
-        cm:set_saved_value("cbac_last_selected_char_cqi", "");
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_GeneralDisbandedEvent",
+    "CharacterConvalescedOrKilled",
+    function(context)
+      return cm:char_is_mobile_general_with_army(context:character());
+    end,
+    function()
+      cm:set_saved_value("cbac_last_selected_char_cqi", "");
+    end,
+    true
+  );
 
-    core:add_listener(
-      "CBAC_UnitMergedEvent",
-      "UnitMergedAndDestroyed",
-      function(context)
-        return cm.campaign_ui_manager:is_panel_open("units_panel") and context:unit():faction():is_human();
-      end,
-      function(context)
-        cm:callback(function()
-            enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
-          end, 0.1)
-      end,
-      true
-    );
+  core:add_listener(
+    "CBAC_UnitMergedEvent",
+    "UnitMergedAndDestroyed",
+    function(context)
+      return cm.campaign_ui_manager:is_panel_open("units_panel") and context:unit():faction():is_human();
+    end,
+    function(context)
+      cm:callback(function()
+          enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
+        end, 0.1)
+    end,
+    true
+  );
 
-    -- Catch all clicks to refresh the army cost tooltip if the units_panel is open
-    -- Fires also when player cancels recruitment of a unit, adds a unit to the queue etc
-    core:add_listener(
-      "CBAC_ClickEvent",
-      "ComponentLClickUp",
-      function(context)
-        return cm.campaign_ui_manager:is_panel_open("units_panel");
-      end,
-      function(context)
-        cm:callback(function()
-            local last_selected_character = cm:get_character_by_cqi(cm:get_saved_value("cbac_last_selected_char_cqi"));
-            if last_selected_character and last_selected_character ~= "" then
-              if not last_selected_character:is_wounded() then
-                if cm:char_is_mobile_general_with_army(last_selected_character) then
-                  generate_tooltip_text_army_cost(last_selected_character);
-                end
+  -- Catch all clicks to refresh the army cost tooltip if the units_panel is open
+  -- Fires also when player cancels recruitment of a unit, adds a unit to the queue etc
+  core:add_listener(
+    "CBAC_ClickEvent",
+    "ComponentLClickUp",
+    function(context)
+      return cm.campaign_ui_manager:is_panel_open("units_panel");
+    end,
+    function(context)
+      cm:callback(function()
+          local last_selected_character = cm:get_character_by_cqi(cm:get_saved_value("cbac_last_selected_char_cqi"));
+          if last_selected_character and last_selected_character ~= "" then
+            if not last_selected_character:is_wounded() then
+              if cm:char_is_mobile_general_with_army(last_selected_character) then
+                generate_tooltip_text_army_cost(last_selected_character);
               end
             end
-          end, 0.3)
-      end,
-      true
-    );
-
-    core:add_listener(
-      "CBAC_ApplyArmyPenalties",
-      "FactionTurnStart",
-      function(context) return (context:faction():is_human()) end,
-      function(context)
-        local current_faction = context:faction();
-        cm:callback(function()
-            enforce_faction_cost_limit(current_faction);
-          end, 0.1)
-      end,
-      true
-    );
-
-    core:add_listener(
-      "CBAC_SupplyLines",
-      "FactionTurnEnd",
-      function(context)
-        return (context:faction():is_human())
-      end,
-      function(context)
-        local faction = context:faction();
-        if (cbac:get_config("supply_lines")) then
-          if cbac:supply_lines_affect_faction(faction) then
-            apply_supply_lines(faction);
           end
+        end, 0.3)
+    end,
+    true
+  );
+
+  core:add_listener(
+    "CBAC_ApplyArmyPenalties",
+    "FactionTurnStart",
+    function(context) return (context:faction():is_human()) end,
+    function(context)
+      local current_faction = context:faction();
+      cm:callback(function()
+          enforce_faction_cost_limit(current_faction);
+        end, 0.1)
+    end,
+    true
+  );
+
+  core:add_listener(
+    "CBAC_SupplyLines",
+    "FactionTurnEnd",
+    function(context)
+      return (context:faction():is_human())
+    end,
+    function(context)
+      local faction = context:faction();
+      if (cbac:get_config("supply_lines")) then
+        if cbac:supply_lines_affect_faction(faction) then
+          apply_supply_lines(faction);
         end
-      end,
-      true
-    );
+      end
+    end,
+    true
+  );
 end
 
 local function main()
-    add_listeners();
+  add_listeners();
 end
 
 main();

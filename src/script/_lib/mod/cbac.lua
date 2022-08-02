@@ -13,6 +13,33 @@ local config = {
   auto_level_ai_lords = 3,
   logging_enabled = false
 };
+local exceptions = {
+  free_heroes = {
+    "wh_dlc07_brt_cha_green_knight_0",
+    "wh_dlc06_dwf_cha_master_engineer_ghost_0",
+    "wh_dlc06_dwf_cha_runesmith_ghost_0",
+    "wh_dlc06_dwf_cha_thane_ghost_0",
+    "wh_dlc06_dwf_cha_thane_ghost_1"
+  },
+  free_units = {
+    "wh_dlc07_brt_cha_green_knight_0"
+  },
+  custom_heroes = {
+    "wh2_dlc11_cst_inf_count_noctilus_0",
+    "wh2_dlc11_cst_inf_count_noctilus_1"
+  }
+}
+
+-- UTILS --
+
+function table.contains(table, element)
+  for _, value in pairs(table) do
+    if value == element then
+      return true;
+    end
+  end
+  return false;
+end
 
 -- GENERIC --
 
@@ -61,19 +88,29 @@ end
 
 -- COST-BASED ARMY CAPS --
 
+function is_free_unit(unit_key)
+  return table.contains(exceptions.free_units, unit_key);
+end
+
 function cbac:get_unit_cost(unit)
-  -- TODO HARDCODED
-  if unit:unit_key() == "wh_dlc07_brt_cha_green_knight_0" then
+  if is_free_unit(unit:unit_key()) then
     return 0;
   else
     return unit:get_unit_custom_battle_cost();
   end
 end
 
+function is_hero(unit_key)
+  return string.find(unit_key, "_cha_") or table.contains(exceptions.custom_heroes, unit_key);
+end
+
+function is_free_hero(unit_key)
+  return table.contains(exceptions.free_heroes, unit_key);
+end
+
 function cbac:get_hero_count(unit)
-  -- TODO HARDCODED
-  if string.find(unit:unit_key(), "_cha_") or (unit:unit_key() == "wh2_dlc11_cst_inf_count_noctilus_0") or (unit:unit_key() == "wh2_dlc11_cst_inf_count_noctilus_1") then
-    if not (unit:unit_key() == "wh_dlc07_brt_cha_green_knight_0" or unit:unit_key() == "wh_dlc06_dwf_cha_master_engineer_ghost_0" or unit:unit_key() == "wh_dlc06_dwf_cha_runesmith_ghost_0" or unit:unit_key() == "wh_dlc06_dwf_cha_thane_ghost_0" or unit:unit_key() == "wh_dlc06_dwf_cha_thane_ghost_1") then
+  if is_hero(unit:unit_key()) then
+    if not is_free_hero(unit:unit_key()) then
       return 1;
     end
   end
@@ -189,7 +226,7 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
           cbac:log(tostring(err));
         end
 
-        unit_card:SimulateMouseOff()
+        unit_card:SimulateMouseOff();
       end
     end
   end
@@ -199,8 +236,9 @@ end
 
 -- SUPPLY LINES --
 
+-- TODO SHOULD BE REMOVED?
 function cbac:supply_lines_affect_faction(faction)
-    local subculture = faction:subculture();
+    local subculture = faction:subculture(); -- TODO HARDCODED
     return not (subculture == "wh_dlc03_sc_bst_beastmen" or subculture == "wh_main_sc_brt_bretonnia" or
       subculture == "wh2_dlc09_sc_tmb_tomb_kings" or subculture == "wh_main_sc_chs_chaos" or
       faction:name() == "wh2_dlc13_lzd_spirits_of_the_jungle");

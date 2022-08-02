@@ -139,15 +139,15 @@ local function apply_supply_lines(faction)
   end
 
   -- Base penalty is +15% unit upkeep on VH and Legendary
-  local base_supply_lines_penalty = 15
+  local base_supply_lines_penalty = 4;
   -- Modify it for easy difficulties
   local combined_difficulty = cm:model():combined_difficulty_level()
   if combined_difficulty == -1 then  -- Hard
-    base_supply_lines_penalty = 7
+    base_supply_lines_penalty = 3;
   elseif combined_difficulty == 0 then  -- Normal
-    base_supply_lines_penalty = 2
+    base_supply_lines_penalty = 2;
   elseif combined_difficulty == 1 then  -- Easy
-    base_supply_lines_penalty = 1
+    base_supply_lines_penalty = 1;
   end
 
   local effect_strength = math.ceil(total_supply_lines_factor * base_supply_lines_penalty);

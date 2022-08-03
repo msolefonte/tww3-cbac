@@ -42,7 +42,10 @@ local function get_dynamic_cost_tt_text(character, army_limit)
       local next_level = math.floor((lord_rank + limit_rank) / limit_rank) * limit_rank;
       return "\n\nCapacity at Level " .. next_level .. ": " .. next_limit_increase + army_limit;
     end
+    return "\n\nAlready at maximum capacity!";
   end
+
+  return "";
 end
 
 local function get_army_cost_tt_text(character, army_cost)

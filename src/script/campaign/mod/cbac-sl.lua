@@ -3,7 +3,7 @@ local cbac = core:get_static_object("cbac");
 local function apply_supply_lines(faction)
   local total_supply_lines_factor = 0;
   local character_list = faction:character_list();
-  for i=0, character_list:num_items() - 1 do
+  for i = 0, character_list:num_items() - 1 do
     local character = character_list:item_at(i);
     if cm:char_is_mobile_general_with_army(character) and not character:character_subtype("wh2_main_def_black_ark") then
       if cbac:is_army_punishable(character:military_force()) then
@@ -21,7 +21,7 @@ local function apply_supply_lines(faction)
   -- Base penalty is +15% unit upkeep on VH and Legendary
   local base_supply_lines_penalty = 4;
   -- Modify it for easy difficulties
-  local combined_difficulty = cm:model():combined_difficulty_level()
+  local combined_difficulty = cm:model():combined_difficulty_level();
   if combined_difficulty == -1 then  -- Hard
     base_supply_lines_penalty = 3;
   elseif combined_difficulty == 0 then  -- Normal

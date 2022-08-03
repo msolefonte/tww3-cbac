@@ -11,9 +11,12 @@ local config = {
   upgrade_ai_armies = false,
   upgrade_grace_period = 20,
   auto_level_ai_lords = 3,
-  logging_enabled = false
+  logging_enabled = true
 };
 local exceptions = {
+  free_factions = {
+    "wh2_dlc10_def_blood_voyage"
+  },
   free_heroes = {
     "wh_dlc07_brt_cha_green_knight_0",
     "wh_dlc06_dwf_cha_master_engineer_ghost_0",
@@ -48,8 +51,8 @@ local exceptions = {
 
 -- UTILS --
 
-function table.contains(table, element)
-  for _, value in pairs(table) do
+function table.contains(tbl, element)
+  for _, value in pairs(tbl) do
     if value == element then
       return true;
     end
@@ -118,7 +121,13 @@ function cbac:is_army_punishable(military_force)
   return true;
 end
 
-function _is_hero(unit_key)
+function cbac:is_faction_punisheable(faction)
+  return faction:name() ~= "rebels" and not faction:name():find("_intervention")
+    and not faction:name():find("_incursion")
+    and not table.contains(exceptions.free_factions, faction:name());
+end
+
+function cbac:is_hero(unit_key)
   return string.find(unit_key, "_cha_") or table.contains(exceptions.custom_heroes, unit_key);
 end
 
@@ -141,7 +150,7 @@ function cbac:get_unit_cost(unit)
 end
 
 function cbac:get_hero_cost(unit)
-  if _is_hero(unit:unit_key()) and not _is_free_hero(unit:unit_key()) then
+  if cbac:is_hero(unit:unit_key()) and not _is_free_hero(unit:unit_key()) then
     return 1;
   end
 

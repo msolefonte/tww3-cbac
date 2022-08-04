@@ -106,9 +106,15 @@ local function check_ai_force_army_limit(faction, character)
     local army_cost = cbac:get_army_cost(character);
     local army_limit = cbac:get_army_limit(character);
 
-    local recruitment_pool = generate_recruitment_pool(faction);
+    local recruitment_pool;
+    local recruitment_pool_generated = false;
 
     if army_cost > army_limit then
+      if not recruitment_pool_generated then
+        recruitment_pool = generate_recruitment_pool(faction);
+        recruitment_pool_generated = true;
+      end
+
       cbac:log("AI Army of faction " .. faction:name() .. " is over cost limit (" .. army_cost .. "/" .. army_limit ..
                "). Limits will be enforced!");
       enforce_limit_on_ai_army(character, recruitment_pool);

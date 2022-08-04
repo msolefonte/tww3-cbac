@@ -11,7 +11,7 @@ local config = {
   upgrade_ai_armies = false,
   upgrade_grace_period = 20,
   auto_level_ai_lords = 3,
-  logging_enabled = true
+  logging_enabled = false
 };
 local exceptions = {
   free_factions = {
@@ -66,6 +66,10 @@ function cbac:log(str)
   if config["logging_enabled"] then
     out('CBAC ' .. str);
   end
+end
+
+function cbac:gls(localised_string_key)
+  return common.get_localised_string("cbac_" .. localised_string_key);
 end
 
 function cbac:get_config(config_key)

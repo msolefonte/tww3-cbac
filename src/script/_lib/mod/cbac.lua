@@ -2,6 +2,7 @@ local cbac = {};
 local config = {
   army_limit_player = 10500,
   army_limit_ai = 12000,
+  army_limit_fl_bonus = 0,
   dynamic_limit = true,
   limit_rank = 2,
   limit_step = 1000,
@@ -95,6 +96,7 @@ function cbac:block_mct_settings_if_required()
       if (mod_cfg:get_option_by_key("settings_locked"):get_finalized_setting()) then
         mod_cfg:get_option_by_key("army_limit_player"):set_read_only(true);
         mod_cfg:get_option_by_key("army_limit_ai"):set_read_only(true);
+        mod_cfg:get_option_by_key("army_limit_fl_bonus"):set_read_only(true);
         mod_cfg:get_option_by_key("dynamic_limit"):set_read_only(true);
         mod_cfg:get_option_by_key("limit_rank"):set_read_only(true);
         mod_cfg:get_option_by_key("limit_step"):set_read_only(true);
@@ -181,6 +183,10 @@ function cbac:get_army_limit(character)
     army_limit = cbac:get_config("army_limit_player");
   else
     army_limit = cbac:get_config("army_limit_ai");
+  end
+
+  if character:is_faction_leader() then
+    army_limit = army_limit + cbac:get_config("army_limit_fl_bonus");
   end
 
   if (cbac:get_config("dynamic_limit")) then

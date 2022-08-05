@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method `is_faction_punishable(faction)` added to the CBAC lib API
   - New method `is_hero(unit_key)` added to the CBAC lib API
 
-## [1.3.0] - 05.08.2022
+## [1.3.0] - 04.08.2022
 
 - Added information about unit costs in the Info button
 - Added support for localization. Now the mod can be translated!
@@ -42,3 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated CHANGELOG.md format
 - Technical changes:
   - New method `gls(localised_string_key)` added to the CBAC lib API
+
+## [1.4.0] - 05.08.2022
+
+- Added a new MCT option: Extra points for Faction Leader
+- Reordered the MCT panel

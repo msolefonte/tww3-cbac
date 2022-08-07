@@ -247,11 +247,11 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
         unit_card:SimulateMouseOn();
 
         local ok, err = pcall(function()
-          local unit_info = find_uicomponent(core:get_ui_root(), "hud_campaign", "unit_information_parent", "unit_info_panel_holder_parent", "unit_info_panel_holder");
-          local unit_context_id = unit_info:GetContextObjectId("CcoUnitDetails");
-          local unit_key_head = string.gsub(unit_context_id, "RecruitmentUnit_", "");
-          local unit_key = string.gsub(unit_key_head, "_%d+_%d+_%d+_%d+$", "");
-          local unit_cost = cco("CcoMainUnitRecord", unit_key):Call("Cost");
+          local unit_info = find_uicomponent(core:get_ui_root(), "hud_campaign", "unit_information_parent",
+                                             "unit_info_panel_holder_parent", "unit_info_panel_holder");
+          local unit_key = string.gsub(string.gsub(unit_info:GetContextObjectId("CcoUnitDetails"),
+                                                   "RecruitmentUnit_", ""), "_%d+_%d+_%d+_%d+$", "");
+          local unit_cost = cbac:get_unit_cost_from_key(unit_key);
 
           cbac:log("Value of " .. unit_key .. ": " .. unit_cost);
           queued_units_cost = queued_units_cost + unit_cost;

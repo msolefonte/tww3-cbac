@@ -16,7 +16,8 @@ local function _get_character_cost_tt_text(character)
   end
 
   local unit_list = character:military_force():unit_list();
-  local character_cost_string = "\n\n" .. cbac:gls("lord") .. ": " .. cbac:get_unit_cost(unit_list:item_at(0)) .. "\n" .. cbac:gls("heroes") .. ": 0";
+  local character_cost_string = "\n\n" .. cbac:gls("lord") .. ": " .. cbac:get_unit_cost(unit_list:item_at(0)) .. "\n"
+                                .. cbac:gls("heroes") .. ": 0";
 
   if unit_list:num_items() > 1 then
     character_cost_string = character_cost_string:sub(1, -2);

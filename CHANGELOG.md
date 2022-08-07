@@ -47,3 +47,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a new MCT option: Extra points for Faction Leader
 - Reordered the MCT panel
+
+## [1.4.1] - 07.08.2022
+
+- Greatly optimized AI limits enforcement algorithm
+  - Number of CBAC (IO) calls reduced to a minimum
+  - AI turns time notably reduced
+- Improved logging features for better bug reports
+- Added an `Enable logging` checkbox to MCT
+- Added a reimbursement to AI after a downgrade is enforced
+- Set the minimum value for AI Limit (Base) to 7000 points
+- Renamed last MCT section into "Advanced Options"
+- Fixed a bug that caused tooltip's Heroes costs to be empty
+- Fixed all SFO incompatibilities
+- Technical changes:
+  - New method `get_unit_cost_from_key(unit_key)` added to the CBAC lib API
+  - Renamed `script/campaign/mod/cbac.lua` into `script/campaign/mod/cbac-tooltip.lua`
+  - Introduced and enforced a 120 chars per line limit

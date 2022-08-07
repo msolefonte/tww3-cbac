@@ -11,8 +11,6 @@ function shuffle(tbl)
 end
 
 function get_table_keys(tbl)
-  cbac:log("get_table_keys " .. #tbl);
-
   local keys = {};
   for key, _ in pairs(tbl) do
     table.insert(keys, key);
@@ -23,22 +21,30 @@ end
 
 -- AI --
 
+local function populate_recruitment_pool(unit_list, recruitment_pool)
+  for i = 1, unit_list:num_items() - 1 do
+    local unit = unit_list:item_at(i);
+    local unit_key = unit:unit_key();
+
+    if recruitment_pool[unit_key] == nil and not cbac:is_hero(unit_key) then  -- Reduce CBAC (IO) calls to keep it optimal
+      local unit_cost = cbac:get_unit_cost(unit);
+      if unit_cost > 0 then
+        cbac:log("Recruitment pool entry: " .. unit_key .. " -> " .. unit_cost);
+        recruitment_pool[unit_key] = unit_cost;
+      end
+    end
+  end
+end
+
 local function generate_recruitment_pool(faction)
   cbac:log("Generating recruitment pool");
   local recruitment_pool = {};
 
   local characters = faction:character_list();
   for i = 0, characters:num_items() - 1 do
-    if cm:char_is_mobile_general_with_army(characters:item_at(i)) then
-    local unit_list = characters:item_at(i):military_force():unit_list();
-      for i = 1, unit_list:num_items() - 1 do
-        local unit = unit_list:item_at(i);
-        local unit_cost = cbac:get_unit_cost(unit);
-
-        if not cbac:is_hero(unit:unit_key()) and unit_cost > 0 then
-          recruitment_pool[unit:unit_key()] = unit_cost;
-        end
-      end
+    local character = characters:item_at(i);
+    if cm:char_is_mobile_general_with_army(character) then
+      populate_recruitment_pool(character:military_force():unit_list(), recruitment_pool);
     end
   end
 
@@ -46,27 +52,29 @@ local function generate_recruitment_pool(faction)
   return recruitment_pool;
 end
 
-local function replace_unit(old_unit_key, new_unit_key, character_lookup)
+local function replace_unit(old_unit_key, new_unit_key, character_lookup, faction_name, reimbursement)
   cbac:log("Replacing " .. old_unit_key .. " with " .. new_unit_key);
   cm:remove_unit_from_character(character_lookup, old_unit_key);
   cm:grant_unit_to_character(character_lookup, new_unit_key);
+  cm:treasury_mod(faction_name, reimbursement); -- Jadawin did not reimburse rebels, blood voyage nor Tomb Kings
 end
 
-local function downgrade_unit_and_get_savings(unit_list, unit_index, recruitment_pool, character_lookup)
-  local unit = unit_list:item_at(unit_index);
-  local unit_cost = cbac:get_unit_cost(unit);
+local function downgrade_unit_and_get_savings(unit_list, unit_index, recruitment_pool, character_lookup, faction_name)
+  local unit_key = unit_list:item_at(unit_index):unit_key();
+  local unit_cost = recruitment_pool[unit_key];  -- Use existing pool to optimize CBAC (IO) calls
 
-  if unit_cost > 0 then
-    cbac:log("Downgrading unit? " .. unit:unit_key());
+  if unit_cost ~= nil and unit_cost > 0 then
+    cbac:log("Downgrading unit? " .. unit_key);
     local recruitment_pool_keys = get_table_keys(recruitment_pool);
     local offset = math.random(0, #recruitment_pool_keys - 1);
 
     for i = 0, #recruitment_pool_keys - 1 do
       local rec_unit_key = recruitment_pool_keys[(i + offset) % #recruitment_pool_keys + 1];
       if recruitment_pool[rec_unit_key] < unit_cost then
-        replace_unit(unit:unit_key(), rec_unit_key, character_lookup);
-        cbac:log("Yay! Points saved: " .. unit_cost - recruitment_pool[rec_unit_key]);
-        return unit_cost - recruitment_pool[rec_unit_key];
+        local reimbursement = unit_cost - recruitment_pool[rec_unit_key];
+        replace_unit(unit_key, rec_unit_key, character_lookup, faction_name, reimbursement);
+        cbac:log("Yay! Points saved: " .. reimbursement);
+        return reimbursement;
       end
     end
   end
@@ -75,8 +83,7 @@ local function downgrade_unit_and_get_savings(unit_list, unit_index, recruitment
   return 0;
 end
 
-local function enforce_limit_on_ai_army(character, recruitment_pool)
-  local required_savings = cbac:get_army_cost(character) - cbac:get_army_limit(character);
+local function enforce_limit_on_ai_army(character, recruitment_pool, required_savings, faction_name)
   local army_is_over_limit = true;
 
   local unit_list = character:military_force():unit_list();
@@ -88,7 +95,7 @@ local function enforce_limit_on_ai_army(character, recruitment_pool)
   unit_indices = shuffle(unit_indices);
   for i = 1, #unit_indices do
     required_savings = required_savings - downgrade_unit_and_get_savings(unit_list, unit_indices[i], recruitment_pool,
-                                                                         cm:char_lookup_str(character));
+                                                                         cm:char_lookup_str(character), faction_name);
     if required_savings <= 0 then
       cbac:log("This army is now under the cost limit, moving on.")
       army_is_over_limit = false;
@@ -117,7 +124,7 @@ local function check_ai_force_army_limit(faction, character)
 
       cbac:log("AI Army of faction " .. faction:name() .. " is over cost limit (" .. army_cost .. "/" .. army_limit ..
                "). Limits will be enforced!");
-      enforce_limit_on_ai_army(character, recruitment_pool);
+      enforce_limit_on_ai_army(character, recruitment_pool, army_cost - army_limit, faction:name());
     end
   end
 end

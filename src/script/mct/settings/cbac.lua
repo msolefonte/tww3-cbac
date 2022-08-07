@@ -100,7 +100,7 @@ option_cbac_autolevel_ai:slider_set_min_max(0, 5);
 option_cbac_autolevel_ai:slider_set_step_size(1);
 option_cbac_autolevel_ai:set_default_value(3);
 
-local mct_section_sl = mct_mod:add_new_section("4-cbac-sl", "Setting Lock", false);
+local mct_section_ao = mct_mod:add_new_section("4-cbac-ao", "Advanced Options", false);
 
 local option_cbac_settings_locked = mct_mod:add_new_option("settings_locked", "checkbox");
 option_cbac_settings_locked:set_text("Lock settings during campaigns");
@@ -108,3 +108,8 @@ option_cbac_settings_locked:set_tooltip_text("If enabled, you can't change these
                                              "from the main menu.");
 option_cbac_settings_locked:set_default_value(false);
 option_cbac_settings_locked:set_read_only(true);
+
+local option_cbac_logging_enabled = mct_mod:add_new_option("logging_enabled", "checkbox");
+option_cbac_logging_enabled:set_text("Enable logging");
+option_cbac_logging_enabled:set_tooltip_text("If enabled, a log will be populated as you play. Use it to report bugs!");
+option_cbac_logging_enabled:set_default_value(false);

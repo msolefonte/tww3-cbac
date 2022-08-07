@@ -64,8 +64,11 @@ end
 -- GENERIC --
 
 function cbac:log(str)
-  if config["logging_enabled"] then
-    out('CBAC ' .. str);
+  if cbac:get_config("logging_enabled") then
+    local log_file = io.open("wolfy_mods_log.txt","a");
+    log_file:write("\n[cbac] " .. str);
+    log_file:flush();
+    log_file:close();
   end
 end
 
@@ -79,7 +82,7 @@ function cbac:get_config(config_key)
 
     if mct ~= nil then
       local mod_cfg = mct:get_mod_by_key("wolfy_cost_based_army_caps");
-      config[config_key] = mod_cfg:get_option_by_key(config_key):get_finalized_setting();
+      return mod_cfg:get_option_by_key(config_key):get_finalized_setting();
     end
   end
 
@@ -151,6 +154,14 @@ function cbac:get_unit_cost(unit)
     return 0;
   else
     return unit:get_unit_custom_battle_cost();
+  end
+end
+
+function cbac:get_unit_cost_from_key(unit_key)
+  if _is_free_unit(unit_key) then
+    return 0;
+  else
+    return cco("CcoMainUnitRecord", unit_key):Call("Cost");
   end
 end
 

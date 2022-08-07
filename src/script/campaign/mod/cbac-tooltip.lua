@@ -17,16 +17,22 @@ local function _get_character_cost_tt_text(character)
 
   local unit_list = character:military_force():unit_list();
   local character_cost_string = "\n\n" .. cbac:gls("lord") .. ": " .. cbac:get_unit_cost(unit_list:item_at(0)) .. "\n"
-                                .. cbac:gls("heroes") .. ": 0";
+                                .. cbac:gls("heroes") .. ": ";
 
   if unit_list:num_items() > 1 then
-    character_cost_string = character_cost_string:sub(1, -2);
+    local heroes_found = false;
     for i = 1, unit_list:num_items() - 1 do
       if string.find(unit_list:item_at(i):unit_key(), "_cha_") then
         character_cost_string = character_cost_string .. cbac:get_unit_cost(unit_list:item_at(i)) .. "/";
+        heroes_found = true;
       end
     end
-    character_cost_string = character_cost_string:sub(1, -2);
+
+    if heroes_found then
+      character_cost_string = character_cost_string:sub(1, -2);
+    else
+      character_cost_string = character_cost_string .. "0";
+    end
   end
 
   return character_cost_string;
@@ -162,7 +168,7 @@ local function set_tt_text_garrison_cost(cqi)
     tt_text = cbac:gls("garrison_disabled");
   else
     local army_cost = cbac:get_garrison_cost(cqi);
-    tt_text = cbac:gls("garrison_cost_1") .. army_cost .. cbac:gls("garrison_cost_2");
+    tt_text = cbac:gls("garrison_cost_1") .. army_cost .. " " .. cbac:gls("garrison_cost_2");
   end
 
   zoom_component:SetTooltipText(tt_text, true)

@@ -11,8 +11,6 @@ function shuffle(tbl)
 end
 
 function get_table_keys(tbl)
-  cbac:log("get_table_keys " .. #tbl);
-
   local keys = {};
   for key, _ in pairs(tbl) do
     table.insert(keys, key);
@@ -28,22 +26,14 @@ local function populate_recruitment_pool(unit_list, recruitment_pool)
     local unit = unit_list:item_at(i);
     local unit_key = unit:unit_key();
 
-    -- Reduce CBAC (IO) calls to keep it optimal
-    if recruitment_pool[unit_key] == nil and cbac:is_hero(unit_key) then
+    if recruitment_pool[unit_key] == nil and not cbac:is_hero(unit_key) then  -- Reduce CBAC (IO) calls to keep it optimal
       local unit_cost = cbac:get_unit_cost(unit);
       if unit_cost > 0 then
+        cbac:log("Recruitment pool entry: " .. unit_key .. " -> " .. unit_cost);
         recruitment_pool[unit_key] = unit_cost;
       end
     end
   end
-
-  -- --reimbursement
-  -- if faction_string ~= "rebels" and faction_string ~= "wh2_dlc10_def_blood_voyage" and culture ~= "wh2_dlc09_tmb_tomb_kings" then
-  --   cm:treasury_mod(faction_string, reimbursement_amount)
-  --   cbac:log("[REIMBURSEMENT] Gold amount reimbursed to faction: "..reimbursement_amount)
-  -- else
-  --   cbac:log("Faction does not get reimbursed because it's the rebels.")
-  -- end
 end
 
 local function generate_recruitment_pool(faction)
@@ -66,17 +56,14 @@ local function replace_unit(old_unit_key, new_unit_key, character_lookup, factio
   cbac:log("Replacing " .. old_unit_key .. " with " .. new_unit_key);
   cm:remove_unit_from_character(character_lookup, old_unit_key);
   cm:grant_unit_to_character(character_lookup, new_unit_key);
-  cm:treasury_mod(faction_name, reimbursement);
-
-  -- --reimbursement
-  -- if faction_string ~= "rebels" and faction_string ~= "wh2_dlc10_def_blood_voyage" and culture ~= "wh2_dlc09_tmb_tomb_kings" then
+  cm:treasury_mod(faction_name, reimbursement); -- Jadawin did not reimburse rebels, blood voyage nor Tomb Kings
 end
 
 local function downgrade_unit_and_get_savings(unit_list, unit_index, recruitment_pool, character_lookup, faction_name)
   local unit_key = unit_list:item_at(unit_index):unit_key();
   local unit_cost = recruitment_pool[unit_key];  -- Use existing pool to optimize CBAC (IO) calls
 
-  if unit_cost > 0 then
+  if unit_cost ~= nil and unit_cost > 0 then
     cbac:log("Downgrading unit? " .. unit_key);
     local recruitment_pool_keys = get_table_keys(recruitment_pool);
     local offset = math.random(0, #recruitment_pool_keys - 1);
@@ -86,7 +73,7 @@ local function downgrade_unit_and_get_savings(unit_list, unit_index, recruitment
       if recruitment_pool[rec_unit_key] < unit_cost then
         local reimbursement = unit_cost - recruitment_pool[rec_unit_key];
         replace_unit(unit_key, rec_unit_key, character_lookup, faction_name, reimbursement);
-        cbac:log("Yay! Points saved: " .. reimbursement;
+        cbac:log("Yay! Points saved: " .. reimbursement);
         return reimbursement;
       end
     end

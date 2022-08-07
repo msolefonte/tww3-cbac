@@ -56,5 +56,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a reimbursement to AI after a downgrade is enforced
 - Set the minimum value for AI Limit (Base) to 7000 points
 - Technical changes:
-  - Introduced and enforced a 120 chars per line limit
   - New method `get_unit_cost_from_key(unit_key)` added to the CBAC lib API
+  - Introduced and enforced a 120 chars per line limit

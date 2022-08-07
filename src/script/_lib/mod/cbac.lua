@@ -78,7 +78,6 @@ function cbac:get_config(config_key)
     local mct = get_mct();
 
     if mct ~= nil then
-      cbac:log("Loading config from MCT: " .. config_key);
       local mod_cfg = mct:get_mod_by_key("wolfy_cost_based_army_caps");
       config[config_key] = mod_cfg:get_option_by_key(config_key):get_finalized_setting();
     end

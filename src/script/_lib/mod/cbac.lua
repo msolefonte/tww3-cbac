@@ -65,10 +65,7 @@ end
 
 function cbac:log(str)
   if cbac:get_config("logging_enabled") then
-    local log_file = io.open("wolfy_mods_log.txt","a");
-    log_file:write("\n[cbac] " .. str);
-    log_file:flush();
-    log_file:close();
+    out("[wolfy][cbac] " .. str);
   end
 end
 

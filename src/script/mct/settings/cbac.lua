@@ -8,7 +8,7 @@ mct_mod:set_title("Cost-based Army Caps", false);
 mct_mod:set_author("Wolfy & Jadawin");
 mct_mod:set_description("MP-Style Cost Limit For All Armies", false);
 
-local mct_section_base = mct_mod:add_new_section("1-cbac-base", "Base Options", false);
+mct_mod:add_new_section("1-cbac-base", "Base Options", false);
 
 local option_cbac_army_limit_player = mct_mod:add_new_option("army_limit_player", "slider");
 option_cbac_army_limit_player:set_text("Player Limit (Base)");
@@ -33,7 +33,7 @@ option_cbac_hero_cap:slider_set_min_max(0, 19);
 option_cbac_hero_cap:slider_set_step_size(1);
 option_cbac_hero_cap:set_default_value(2);
 
-local mct_section_extra = mct_mod:add_new_section("2-cbac-extra", "Extra Options", false);
+mct_mod:add_new_section("2-cbac-extra", "Extra Options", false);
 
 local option_cbac_dynamic_limit = mct_mod:add_new_option("dynamic_limit", "checkbox");
 option_cbac_dynamic_limit:set_text("Enable Dynamic Cost Limit");
@@ -77,7 +77,7 @@ option_cbac_army_limit_fl_bonus:slider_set_min_max(0, 10000);
 option_cbac_army_limit_fl_bonus:slider_set_step_size(500);
 option_cbac_army_limit_fl_bonus:set_default_value(0);
 
-local mct_section_ai = mct_mod:add_new_section("3-cbac-ai", "AI Behaviour Options [NOT READY]", false);
+mct_mod:add_new_section("3-cbac-ai", "AI Behaviour Options [NOT READY]", false);
 
 local option_cbac_upgrade_ai = mct_mod:add_new_option("upgrade_ai_armies", "checkbox");
 option_cbac_upgrade_ai:set_text("Enable Upgraded AI Armies");
@@ -100,7 +100,7 @@ option_cbac_autolevel_ai:slider_set_min_max(0, 5);
 option_cbac_autolevel_ai:slider_set_step_size(1);
 option_cbac_autolevel_ai:set_default_value(3);
 
-local mct_section_ao = mct_mod:add_new_section("4-cbac-ao", "Advanced Options", false);
+mct_mod:add_new_section("4-cbac-ao", "Advanced Options", false);
 
 local option_cbac_settings_locked = mct_mod:add_new_option("settings_locked", "checkbox");
 option_cbac_settings_locked:set_text("Lock settings during campaigns");

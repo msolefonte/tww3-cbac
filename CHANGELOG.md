@@ -64,3 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method `get_unit_cost_from_key(unit_key)` added to the CBAC lib API
   - Renamed `script/campaign/mod/cbac.lua` into `script/campaign/mod/cbac-tooltip.lua`
   - Introduced and enforced a 120 chars per line limit
+
+## [1.4.2] - 08.08.2022
+
+- Moved logging back to the common file

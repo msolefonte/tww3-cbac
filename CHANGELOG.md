@@ -68,3 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.2] - 08.08.2022
 
 - Moved logging back to the common file
+
+## [1.4.3] - 12.08.2022
+
+- Fixed a bug where limits were only enforce when Lua console was loaded

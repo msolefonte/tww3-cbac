@@ -1,23 +1,20 @@
 local cbac = core:get_static_object("cbac");
 
 local function enforce_army_cost_limit(character)
-  console_print("one");
   if cm:char_is_mobile_general_with_army(character) then
-    console_print("two");
     if cbac:is_army_punishable(character:military_force()) then
-      console_print("three");
       local army_cqi = character:military_force():command_queue_index();
       local army_limit = cbac:get_army_limit(character);
       local army_cost = cbac:get_army_cost(character);
 
       if army_cost > army_limit or cbac:get_army_hero_count(character) > cbac:get_config("hero_cap") then
-        console_print("Army (" .. army_cqi .. ") is over cost limit (" .. army_limit .. "), will be punished!");
+        cbac:log("Army (" .. army_cqi .. ") is over cost limit (" .. army_limit .. "), will be punished!");
         cm:apply_effect_bundle_to_force("cbac_army_cost_limit_penalty", army_cqi, 1);
         return;
       end
 
       if army_cost <= army_limit then
-        console_print("Army (" .. army_cqi .. ") is not over cost limit, will remove penalty!");
+        cbac:log("Army (" .. army_cqi .. ") is not over cost limit, will remove penalty!");
         cm:remove_effect_bundle_from_force("cbac_army_cost_limit_penalty", army_cqi);
       end
     end
@@ -25,9 +22,7 @@ local function enforce_army_cost_limit(character)
 end
 
 local function enforce_faction_cost_limit(faction)
-  console_print("zero");
   for i = 0, faction:character_list():num_items() - 1 do
-    console_print(i);
     enforce_army_cost_limit(faction:character_list():item_at(i));
   end
 end

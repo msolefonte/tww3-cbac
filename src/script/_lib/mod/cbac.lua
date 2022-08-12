@@ -243,6 +243,29 @@ function cbac:get_garrison_cost(cqi)
   return garrison_cost;
 end
 
+local function get_unit_cost_from_unit_card(unit_card)
+  local unit_cost = 0;
+
+  unit_card:SimulateMouseOn();
+  local ok, err = pcall(function()
+    local unit_info = find_uicomponent(core:get_ui_root(), "hud_campaign", "unit_information_parent",
+                                       "unit_info_panel_holder_parent", "unit_info_panel_holder");
+    local unit_key = string.gsub(string.gsub(unit_info:GetContextObjectId("CcoUnitDetails"), "RecruitmentUnit_", ""),
+                                 "_%d+_%d+_%d+_%d+$", "");
+    unit_cost = cbac:get_unit_cost_from_key(unit_key);
+    cbac:log("Value of " .. unit_key .. ": " .. unit_cost);
+    console_print("Value of " .. unit_key .. ": " .. unit_cost);
+  end);
+
+  if not ok then
+    cbac:log("Error reading a queued unit card: " .. unit_card:Id());
+    cbac:log(tostring(err));
+  end
+  unit_card:SimulateMouseOff();
+
+  return unit_cost;
+end
+
 function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
   local queued_units_cost = 0;
 
@@ -250,31 +273,16 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
   if army then
     for i = 0, army:ChildCount() - 1 do
       local unit_card = UIComponent(army:Find(i));
-      if unit_card:Id():find("Queued") then
-        unit_card:SimulateMouseOn();
-
-        local ok, err = pcall(function()
-          local unit_info = find_uicomponent(core:get_ui_root(), "hud_campaign", "unit_information_parent",
-                                             "unit_info_panel_holder_parent", "unit_info_panel_holder");
-          local unit_key = string.gsub(string.gsub(unit_info:GetContextObjectId("CcoUnitDetails"),
-                                                   "RecruitmentUnit_", ""), "_%d+_%d+_%d+_%d+$", "");
-          local unit_cost = cbac:get_unit_cost_from_key(unit_key);
-
-          cbac:log("Value of " .. unit_key .. ": " .. unit_cost);
-          queued_units_cost = queued_units_cost + unit_cost;
-        end)
-
-        if not ok then
-          cbac:log("Error reading a queued unit card: " .. unit_card:Id());
-          cbac:log(tostring(err));
-        end
-        unit_card:SimulateMouseOff();
+      if unit_card:Id():find("Queued") or unit_card:Id():find("temp_merc") then
+        queued_units_cost = get_unit_cost_from_unit_card(unit_card);
       end
     end
   end
 
   return queued_units_cost;
 end
+
+cbac:get_army_queued_units_cost();
 
 -- SUPPLY LINES --
 

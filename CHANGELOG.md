@@ -5,13 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - TBA
+## [1.0.0] - 25.04.2019
 
 - Original work by Jadawin
 
 ## [2.0.0] - 01.08.2022
 
-- Initial Release
+- Complete rework from scratch
+- Added automatic support for DLC and mod units
+- Improved AI limits enforcement algorithm
+- Removed MCT settings from the save game
+- Removed costs from unit names
+
 
 ## [2.1.0] - 02.08.2022
 

@@ -254,7 +254,6 @@ local function get_unit_cost_from_unit_card(unit_card)
                                  "_%d+_%d+_%d+_%d+$", "");
     unit_cost = cbac:get_unit_cost_from_key(unit_key);
     cbac:log("Value of " .. unit_key .. ": " .. unit_cost);
-    console_print("Value of " .. unit_key .. ": " .. unit_cost);
   end);
 
   if not ok then
@@ -266,7 +265,7 @@ local function get_unit_cost_from_unit_card(unit_card)
   return unit_cost;
 end
 
-function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
+function cbac:get_army_queued_units_cost()
   local queued_units_cost = 0;
 
   local army = find_uicomponent_from_table(core:get_ui_root(), {"units_panel", "main_units_panel", "units"})
@@ -281,8 +280,6 @@ function cbac:get_army_queued_units_cost()  -- TODO CHECK NURGLE AND ROR
 
   return queued_units_cost;
 end
-
-cbac:get_army_queued_units_cost();
 
 -- SUPPLY LINES --
 

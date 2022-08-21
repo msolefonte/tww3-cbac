@@ -273,7 +273,7 @@ function cbac:get_army_queued_units_cost()
     for i = 0, army:ChildCount() - 1 do
       local unit_card = UIComponent(army:Find(i));
       if unit_card:Id():find("Queued") or unit_card:Id():find("temp_merc") then
-        queued_units_cost = get_unit_cost_from_unit_card(unit_card);
+        queued_units_cost = queued_units_cost + get_unit_cost_from_unit_card(unit_card);
       end
     end
   end

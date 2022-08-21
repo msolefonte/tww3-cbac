@@ -17,7 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed MCT settings from the save game
 - Removed costs from unit names
 
-
 ## [2.1.0] - 02.08.2022
 
 - Removed Army Limits for Cathayan Caravans and Ogre Camps
@@ -74,14 +73,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed `script/campaign/mod/cbac.lua` into `script/campaign/mod/cbac-tooltip.lua`
   - Introduced and enforced a 120 chars per line limit
 
-## [1.4.2] - 08.08.2022
+## [2.4.2] - 08.08.2022
 
 - Moved logging back to the common file
 
-## [1.4.3] - 12.08.2022
+## [2.4.3] - 12.08.2022
 
 - Fixed a bug where limits were only enforced when Lua console was loaded
 
-## [1.5.0] - TBA
+## [2.5.0] - 18.08.2022
 
-- Introduced support for instant recruitment (i.e. Nurgle/Regiment of Renown)
+- Added support for instant recruitment (i.e. Nurgle/Regiment of Renown)
+- Updated versioning to reflect original work by Jadawin

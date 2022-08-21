@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 01.08.2022
+## [1.0.0] - 25.04.2019
 
-- Initial Release
+- Original work by Jadawin
 
-## [1.1.0] - 02.08.2022
+## [2.0.0] - 01.08.2022
+
+- Complete rework from scratch
+- Added automatic support for DLC and mod units
+- Improved AI limits enforcement algorithm
+- Removed MCT settings from the save game
+- Removed costs from unit names
+
+## [2.1.0] - 02.08.2022
 
 - Removed Army Limits for Cathayan Caravans and Ogre Camps
 - Reduced Supply Lines values to reflect Warhammer III changes
@@ -20,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Moved supply lines code into a new script
   - New method `is_army_punishable(military_force)` added to the CBAC lib API
 
-## [1.2.0] - 04.08.2022
+## [2.2.0] - 04.08.2022
 
 - Introduced enforcement of AI cost limits via a new automatic method
   - This new algorithm does not require manual maintenance
@@ -33,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New method `is_faction_punishable(faction)` added to the CBAC lib API
   - New method `is_hero(unit_key)` added to the CBAC lib API
 
-## [1.3.0] - 04.08.2022
+## [2.3.0] - 04.08.2022
 
 - Added information about unit costs in the Info button
 - Added support for localization. Now the mod can be translated!
@@ -43,12 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Technical changes:
   - New method `gls(localised_string_key)` added to the CBAC lib API
 
-## [1.4.0] - 05.08.2022
+## [2.4.0] - 05.08.2022
 
 - Added a new MCT option: Extra points for Faction Leader
 - Reordered the MCT panel
 
-## [1.4.1] - 07.08.2022
+## [2.4.1] - 07.08.2022
 
 - Greatly optimized AI limits enforcement algorithm
   - Number of CBAC (IO) calls reduced to a minimum
@@ -65,10 +73,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Renamed `script/campaign/mod/cbac.lua` into `script/campaign/mod/cbac-tooltip.lua`
   - Introduced and enforced a 120 chars per line limit
 
-## [1.4.2] - 08.08.2022
+## [2.4.2] - 08.08.2022
 
 - Moved logging back to the common file
 
-## [1.4.3] - 12.08.2022
+## [2.4.3] - 12.08.2022
 
-- Fixed a bug where limits were only enforce when Lua console was loaded
+- Fixed a bug where limits were only enforced when Lua console was loaded
+
+## [2.5.0] - 18.08.2022
+
+- Added support for instant recruitment (i.e. Nurgle/Regiment of Renown)
+- Updated versioning to reflect original work by Jadawin

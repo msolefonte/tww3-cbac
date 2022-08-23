@@ -22,6 +22,7 @@ local function enforce_army_cost_limit(character)
 end
 
 local function enforce_faction_cost_limit(faction)
+  cbac:log("Enforcing faction cost limits for faction " .. faction:name());
   for i = 0, faction:character_list():num_items() - 1 do
     enforce_army_cost_limit(faction:character_list():item_at(i));
   end
@@ -48,8 +49,11 @@ local function add_listeners()
     end,
     function()
       cm:callback(function()
-          enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
-        end, 0.1)
+        local active_factions = cm:model():world():whose_turn_is_it();
+        for i = 0, active_factions:num_items() - 1 do
+          enforce_faction_cost_limit(active_factions:item_at(i));
+        end
+      end, 0.1)
     end,
     true
   );
@@ -72,10 +76,13 @@ local function add_listeners()
     function(context)
       return cm.campaign_ui_manager:is_panel_open("units_panel") and context:unit():faction():is_human();
     end,
-    function(context)
+    function()
       cm:callback(function()
-          enforce_faction_cost_limit(cm:model():world():whose_turn_is_it());
-        end, 0.1)
+        local active_factions = cm:model():world():whose_turn_is_it();
+        for i = 0, active_factions:num_items() - 1 do
+          enforce_faction_cost_limit(active_factions:item_at(i));
+        end
+      end, 0.1)
     end,
     true
   );

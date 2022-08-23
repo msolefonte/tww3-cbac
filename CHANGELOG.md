@@ -85,3 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for instant recruitment (i.e. Nurgle/Regiment of Renown)
 - Updated versioning to reflect original work by Jadawin
+
+## [2.5.1] - 23.08.2022
+
+- Fixed a bug that prevented the debuff from disappearing after disbanding units
